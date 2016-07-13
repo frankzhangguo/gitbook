@@ -143,15 +143,12 @@
                     $('#info').html(data);
                 }
 
-
                 SyntaxHighlighter.highlight();
-                if (toc != "")
-                    $("html,body").animate({scrollTop: $(toc).offset().top - 104}, 1000);
             });
-        } else {
-            if (toc != "")
-                $("html,body").animate({scrollTop: $(toc).offset().top - 104}, 1000);
-        }
+        } 
+        
+        $('html,body').animate({ scrollTop: 0 }, 500);
+
         console.log("This is the open file name:" + fileName);
     }
     var routes = {
@@ -160,7 +157,7 @@
             console.log("webbase/" + a );
 
             loadBookWithTopic("/webpage/developer/platform3/" + a);
-        },
+        }
        
     };
 
