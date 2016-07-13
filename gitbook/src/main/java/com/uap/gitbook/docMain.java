@@ -20,9 +20,6 @@ public class docMain {
 			System.out.println("\nThe foo property: " + prop.getProperty("path"));
 			String path = prop.getProperty("path");
 
-			// FileUtils.deleteDirectory(new File(path +
-			// ConstantInterface.HTML));
-
 			SummaryParse parse = new SummaryParse();
 			Menu menu = parse.parse(path);
 
@@ -35,13 +32,6 @@ public class docMain {
 			List<Node> buildListToTree = new TreeBuilder().buildListToTree(menu.getItems());
 
 			HtmlTools.toHTMLFile(buildListToTree, menu);
-			// System.out.print(buildListToTree.toString());
-
-			// 将图片等copy到HTML文件夹
-			// HtmlTools.copy2HtmlDir(self.getBasedir(), path);
-			//
-
-			// copy all the files except md
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

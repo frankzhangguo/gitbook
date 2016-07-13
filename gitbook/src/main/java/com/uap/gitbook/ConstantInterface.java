@@ -16,4 +16,5 @@ public interface ConstantInterface {
 	public static boolean WITHTOC = true;
 	public static String ONLY_PARENT = "only_parent";
 	public static String HTML = "";
+	public static String direct_path = "platform3";
 }

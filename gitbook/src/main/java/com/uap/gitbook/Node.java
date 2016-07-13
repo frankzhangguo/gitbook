@@ -104,7 +104,7 @@ public class Node {
 		p.setTocTag(ConstantInterface.TOCTAG);
 		List<String> toc = null;
 
-		String route = "#/platform3/" + self.getUrl();
+		String route = "#/" + ConstantInterface.direct_path + "/" + self.getUrl();
 		if (ConstantInterface.WITHTOC) {
 			if (self.getMdfile().equals(ConstantInterface.ONLY_PARENT)) {
 				li.append("<li class='parent'><a><span class='open-sub'></span>" + self.getShowname() + "</a>");
