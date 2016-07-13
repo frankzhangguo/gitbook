@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8">
+    <title>ibook html</title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <meta class="viewport" name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Plagins CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/customizer/pages.css">
+    <link rel="stylesheet" href="/css/customizer/md.css">
+
+    <!-- IE Styles-->
+    <link rel='stylesheet' href="/css/ie/ie.css">
+</head>
+
+<body class="fixed-header">
+
+<div class="page-box">
+    <div class="page-box-content">
+
+        <div id="header"></div>
+        <!-- #header -->
+
+        <div class="breadcrumb-box">
+            <div class="container">
+                <ul class="breadcrumb">
+                    <li><a href="../../../index.html">Home</a></li>
+                    <li id="nava-name" class="active">nava-name</li>
+                </ul>
+            </div>
+        </div>
+        <!-- .breadcrumb-box -->
+
+        <section id="main">
+
+            <div class="container">
+                <div class="ctitle-box">
+                    <h4 id="nava-title" class="title">nava-title</h4>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="row">
+
+                    <article class="content pull-right col-sm-12 col-md-9">
+                        <div id="info" class="description border-white">
+
+
+                        </div>
+                        <!-- #info .content -->
+                    </article>
+                    <!-- .content -->
+
+                    <div id="sidebar" class="sidebar col-sm-12 col-md-3">
+                        <aside class="widget menu">
+                            <nav id="left-menu">
+                            </nav>
+                        </aside>
+                        <!-- .widget menu-->
+                    </div>
+                    <!-- .sidebar -->
+
+                </div>
+                <!-- .row-->
+            </div>
+            <!-- .container -->
+
+        </section>
+        <!-- #main -->
+
+    </div>
+    <!-- .page-box-content -->
+</div>
+<!-- .page-box -->
+
+<div id="footer"></div>
+<!-- .footer -->
+
+<div class="clearfix"></div>
+<!-- .clearfix -->
+
+<script src="/js/jquery-2.1.3.min.js"></script>
+<script src="/js/jquery.pin.js"></script>
+<script src="/js/jquery.lazyload.js"></script>
+<script type="text/javascript" src="/js/syntaxhighlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="/js/syntaxhighlighter/scripts/shBrushCss.js"></script>
+<script type="text/javascript" src="/js/syntaxhighlighter/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/js/syntaxhighlighter/scripts/shBrushJScript.js"></script>
+
+<link type="text/css" rel="stylesheet" href="/js/syntaxhighlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="/js/syntaxhighlighter/styles/shThemeDefault.css"/>
+<script type="text/javascript">
+    SyntaxHighlighter.config.clipboardSwf = '/js/syntaxhighlighter/scripts/clipboard.swf';
+    SyntaxHighlighter.config.tagName = "code";
+    SyntaxHighlighter.all();
+</script>
+
+<!-- 自适应布局框架 -->
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.appear.js"></script>
+<script src="/webpage/developer/ieop/libs/director/director.min.js"></script>
+
+<script src="/js/main.js"></script>
+
+
+<script>
+
+    var currentFileName = "";
+
+    function loadBookWithTopic(fileName, $temp) {
+        console.log("got $temp:" + $temp);
+
+        var tocidex = fileName.indexOf("#");
+        var toc = "";
+        console.log("got tocidex:" + tocidex);
+        if (tocidex > 0) {
+            toc = toc + fileName.substr(tocidex, fileName.length);
+            fileName = fileName.substr(0, tocidex);
+        }
+        console.log("got name:" + fileName);
+        if (fileName != currentFileName) {
+            $.get(fileName, function (data) {
+                currentFileName = fileName;
+
+                if (typeof($temp) == "undefined") {//要加typeof()
+                    var path = fileName.substr(0, fileName.lastIndexOf("/"));
+                    data = data.replace(/src="/g, 'src="' + path + "/");
+                    $('#info').html(data);
+                } else if ($temp == 0) {
+                    $('#info').html(data)
+                } else {
+                    var path = fileName.substr(0, fileName.lastIndexOf("/"));
+                    data = data.replace(/src="/g, 'src="' + path + "/");
+                    $('#info').html(data);
+                }
+
+
+                SyntaxHighlighter.highlight();
+                if (toc != "")
+                    $("html,body").animate({scrollTop: $(toc).offset().top - 104}, 1000);
+            });
+        } else {
+            if (toc != "")
+                $("html,body").animate({scrollTop: $(toc).offset().top - 104}, 1000);
+        }
+        console.log("This is the open file name:" + fileName);
+    }
+    var routes = {
+       
+        '/platform3/(.*$)': function (a) {
+            console.log("webbase/" + a );
+
+            loadBookWithTopic("/webpage/developer/platform3/" + a);
+        },
+       
+    };
+
+    var router = Router(routes);
+    router.init();
+
+
+</script>
+
+</body>
+
+</html>
