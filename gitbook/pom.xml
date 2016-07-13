@@ -84,7 +84,7 @@
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
                       <manifest>
-                        <mainClass>com.yonyou.web.docMain</mainClass>
+                        <mainClass>com.uap.gitbook.docMain</mainClass>
                       </manifest>
                     </archive>
  
