@@ -1,0 +1,4 @@
+mvn install:install-file -DgroupId=com.git -DartifactId=cpdetector_1.0.10 -Dversion=11.0.10 -Dpackaging=jar -Dfile=cpdetector_1.0.10.jar
+mvn install:install-file -DgroupId=com.git -DartifactId=antlr-2.7.4 -Dversion=2.7.4 -Dpackaging=jar -Dfile=antlr-2.7.4.jar
+mvn install:install-file -DgroupId=com.git -DartifactId=chardet-1.0 -Dversion=1.0 -Dpackaging=jar -Dfile=chardet-1.0.jar
+mvn install:install-file -DgroupId=com.git -DartifactId=jargs-1.0 -Dversion=1.0 -Dpackaging=jar -Dfile=jargs-1.0.jar

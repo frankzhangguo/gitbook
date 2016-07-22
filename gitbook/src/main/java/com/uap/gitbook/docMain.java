@@ -20,6 +20,8 @@ public class docMain {
 			System.out.println("\nThe foo property: " + prop.getProperty("path"));
 			String path = prop.getProperty("path");
 
+			HtmlTools.checkEncode(path);
+
 			SummaryParse parse = new SummaryParse();
 			Menu menu = parse.parse(path);
 

@@ -8,6 +8,7 @@ import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.CopyOption;
@@ -32,6 +33,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.markdown4j.Markdown4jProcessor;
+
+import info.monitorenter.cpdetector.CharsetPrinter;
 
 /**
  * @author Frank
@@ -284,7 +287,8 @@ public class HtmlTools implements ConstantInterface {
 
 			Markdown4jProcessor processor = new Markdown4jProcessor();
 			String html = processor.process(fileContent);
-			System.out.println("文件名称：" + args.getMarkdownFile() + "      字数：" + fileContent.length());
+			// System.out.println("文件名称：" + args.getMarkdownFile() + " 字数：" +
+			// fileContent.length());
 
 			// html = getFileContent(args.getHeaderFile()) + html +
 			// getFileContent(args.getFooterFile());
@@ -491,6 +495,41 @@ public class HtmlTools implements ConstantInterface {
 			return "";
 		}
 
+	}
+
+	public static String guessEncoding(String filename) {
+		try {
+			CharsetPrinter charsetPrinter = new CharsetPrinter();
+			String encode = charsetPrinter.guessEncoding(new File(filename));
+			return encode;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static void checkEncode(String path) throws Exception {
+		List<String> filePathList = findAllFiles(path, ".md");
+		for (String filePath : filePathList) {
+			String encode = guessEncoding(filePath);
+			if (!encode.equalsIgnoreCase("UTF-8")) {
+				if (avaiable(filePath)) {
+					System.err.println("文件编码错误, 文件编码为" + encode + "非UTF-8：   " + filePath);
+				}
+			}
+		}
+	}
+
+	public static boolean avaiable(String filePath) throws Exception {
+		FileInputStream fin = new FileInputStream(filePath);
+		int size = fin.available();
+
+		fin.close();
+
+		if (size == 0) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 }
