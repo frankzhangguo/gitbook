@@ -28,7 +28,7 @@ public class MainTest {
 			 * System.out.print(buildListToTree.toString());
 			 */
 
-			HtmlTools.copyAllFiles("D:/GIT/iuap-quickstart/", ".jpg");
+			HtmlTools.copyAllFiles("D:\\workspace\\part1\\", "D:\\workspace\\part1\\");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

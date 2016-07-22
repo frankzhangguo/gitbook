@@ -15,6 +15,6 @@ public interface ConstantInterface {
 	public static String TOCTAG = "h1";
 	public static boolean WITHTOC = true;
 	public static String ONLY_PARENT = "only_parent";
-	public static String HTML = "";
+	public static String HTML = "";// \\.html\\
 	public static String direct_path = "platform3";
 }

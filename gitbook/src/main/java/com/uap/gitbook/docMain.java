@@ -33,6 +33,8 @@ public class docMain {
 
 			HtmlTools.toHTMLFile(buildListToTree, menu);
 
+			// HtmlTools.copyAllFiles(path, path);
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

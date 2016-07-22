@@ -148,36 +148,52 @@ public class HtmlTools implements ConstantInterface {
 
 	}
 
-	public static void copyAllFiles(String path, String subfix) throws IOException {
+	public static boolean needToCopy(String path) {
+
+		// 表达式对象
+		Pattern p = Pattern.compile("\\\\\\.[\\w]*");
+		// 创建 Matcher 对象
+		Matcher m = p.matcher(path);
+		// 是否匹配
+		if (m.find()) {// .开头 如：.git
+			return false;
+		}
+
+		// 表达式对象
+		p = Pattern.compile("\\.md\\b", Pattern.CASE_INSENSITIVE);
+		// 创建 Matcher 对象
+		m = p.matcher(path);
+		// 是否匹配
+		if (m.find()) {// .md 结尾
+			return false;
+		}
+		return true;
+	}
+
+	public static void copyAllFiles(String path, String distpath) throws IOException {
 		path = path.toLowerCase();
+		distpath = distpath.toLowerCase();
 		File file = new File(path);
 		File[] files = file.listFiles();
-		boolean root = true;
 
 		if (files == null) {
 			return;
 		}
 		for (int i = 0; i < files.length; i++) {
-			if (files[i].isDirectory() && !files[i].getAbsolutePath().endsWith(ConstantInterface.HTML)) {
-				copyAllFiles(files[i].getAbsolutePath(), subfix);
 
-				if (!root) {
+			if (needToCopy(files[i].getAbsolutePath())) {
+				if (files[i].isDirectory()) {
+					copyAllFiles(files[i].getAbsolutePath(), distpath);
 
-				}
-				root = false;
-			} else {
-				String filePath = files[i].getAbsolutePath().toLowerCase();
-
-				if (filePath.endsWith(subfix)) {
+				} else {
+					String filePath = files[i].getAbsolutePath().toLowerCase();
 
 					String distFile = filePath;
-					// distFile = distFile.replace('\\', '/');
-
-					distFile = distFile.replace(path, path + "\\_html");
-
+					distFile = distFile.replace(distpath, distpath + ConstantInterface.HTML);
 					FileUtils.copyFile(new File(filePath), new File(distFile));
 				}
 			}
+
 		}
 
 	}
@@ -199,6 +215,21 @@ public class HtmlTools implements ConstantInterface {
 			}
 
 		}
+
+		// md文档中存在 img 标签
+		links = doc.getElementsByTag("img");
+
+		for (int i = 0; i < links.size(); i++) {
+			Element element = links.get(i);
+			String piclink = element.attr("src").trim();
+
+			if (piclink.startsWith("/")) {
+				piclink = piclink.substring(1);
+			}
+			element.attr("src", piclink);
+
+		}
+
 		String out = doc.toString();
 		if (prewithcode) {
 
@@ -241,7 +272,9 @@ public class HtmlTools implements ConstantInterface {
 		}
 		File file = new File(args.getMarkdownFile());
 		if (!file.exists()) {
-			throw new FileNotFoundException(args.getMarkdownFile());
+			System.err.println("java.io.FileNotFoundException:" + args.getMarkdownFile());
+			// throw new FileNotFoundException();
+			return null;
 		}
 		List<String> list = new ArrayList<String>();
 
@@ -396,6 +429,8 @@ public class HtmlTools implements ConstantInterface {
 			for (Node item : nodes) {
 				html.append(item.process());
 			}
+			html.append("<li><a href='/webpage/developer/ieop/views/docIndex.html#/pic/webpage/developer/ieop/doc/quickdev/startup_setup.html'>开发平台历史版本</a></li>");
+
 			html.append(" </ul>");
 			html.append("\r\n");
 		}

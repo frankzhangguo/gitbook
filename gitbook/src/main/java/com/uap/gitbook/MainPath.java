@@ -4,11 +4,9 @@
 package com.uap.gitbook;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
@@ -26,14 +24,14 @@ public class MainPath {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		String path = "D:/webbasepath/service";
+		String path = "D:\\workspace\\part1";
 		try {
-			Properties prop = new Properties();
-			FileInputStream fis = new FileInputStream("path.properties");
-			prop.load(fis);
-			prop.list(System.out);
-			System.out.println("\nThe foo property: " + prop.getProperty("path"));
-			path = prop.getProperty("path");
+			/*
+			 * Properties prop = new Properties(); FileInputStream fis = new
+			 * FileInputStream("path.properties"); prop.load(fis);
+			 * prop.list(System.out); System.out.println("\nThe foo property: "
+			 * + prop.getProperty("path")); path = prop.getProperty("path");
+			 */
 			process(path);
 			// reformat(path);
 		} catch (IOException e) {
