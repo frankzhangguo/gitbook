@@ -3,26 +3,11 @@
  */
 package com.uap.gitbook;
 
-import static java.nio.file.FileVisitResult.CONTINUE;
-import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.CopyOption;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.FileSystemLoopException;
-import java.nio.file.FileVisitOption;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,82 +26,6 @@ import info.monitorenter.cpdetector.CharsetPrinter;
  * 
  */
 public class HtmlTools implements ConstantInterface {
-	private static class TreeCopier implements FileVisitor<Path> {
-		private final Path source;
-		private final Path target;
-
-		TreeCopier(Path source, Path target) {
-			this.source = source;
-			this.target = target;
-		}
-
-		@Override
-		public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
-			return CONTINUE;
-		}
-
-		@Override
-		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-			// before visiting entries in a directory we copy the directory
-			// (okay if directory already exists).
-			CopyOption[] options = new CopyOption[0];
-			Path newdir = target.resolve(source.relativize(dir));
-			try {
-				Files.copy(dir, newdir, options);
-			} catch (FileAlreadyExistsException x) {
-				// ignore
-			} catch (IOException x) {
-				System.err.format("Unable to create: %s: %s%n", newdir, x);
-				return SKIP_SUBTREE;
-			}
-			return CONTINUE;
-		}
-
-		@Override
-		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-
-			copyFile(file, target.resolve(source.relativize(file)));
-			return CONTINUE;
-		}
-
-		@Override
-		public FileVisitResult visitFileFailed(Path file, IOException exc) {
-			if (exc instanceof FileSystemLoopException) {
-				System.err.println("cycle detected: " + file);
-			} else {
-				System.err.format("Unable to copy: %s: %s%n", file, exc);
-			}
-			return CONTINUE;
-		}
-	}
-
-	private static void copyFile(Path source, Path target) {
-		CopyOption[] options = new CopyOption[] { REPLACE_EXISTING };
-		try {
-			Files.copy(source, target, options);
-		} catch (IOException x) {
-			System.err.format("Unable to copy: %s: %s%n", source, x);
-		}
-	}
-
-	public static void copy2HtmlDir(String path, String source) throws IOException {
-		File resFile = new File(path + source + "img");
-		File distFile = new File(path + HTML + source);
-
-		if (resFile.isDirectory()) {
-			FileUtils.copyDirectoryToDirectory(resFile, distFile);
-
-		}
-	}
-
-	public static void copyDirectory(String sourcePath, String targetPath) throws IOException {
-		Path source = Paths.get(sourcePath);
-		Path target = Paths.get(targetPath);
-		// follow links when copying files
-		EnumSet<FileVisitOption> opts = EnumSet.of(FileVisitOption.FOLLOW_LINKS);
-		TreeCopier tc = new TreeCopier(source, target);
-		Files.walkFileTree(source, opts, Integer.MAX_VALUE, tc);
-	}
 
 	/**
 	 * 
@@ -228,6 +137,8 @@ public class HtmlTools implements ConstantInterface {
 
 			if (piclink.startsWith("/")) {
 				piclink = piclink.substring(1);
+			} else if (piclink.startsWith("./")) {
+				piclink = piclink.substring(2);
 			}
 			element.attr("src", piclink);
 

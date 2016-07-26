@@ -157,8 +157,22 @@
             console.log("webbase/" + a );
 
             loadBookWithTopic("/webpage/developer/platform3/" + a);
+        },
+      //from component manual
+        '/manual/(.*$)': function (a) {
+            var manual_link, _link;
+            $("[href*=" + a + "]").each(function () {//防止找/faumual/组件的时候找到/faumuals/
+                _link = $(this).attr("href");
+                var reg = new RegExp("/" + a + "/");
+                if (_link.match(reg)) {
+                    manual_link = _link;
+                }
+                ;
+            });
+
+            // var manual_link = $("[href*=/" + a + "/]").attr("href");
+            window.location = manual_link;
         }
-       
     };
 
     var router = Router(routes);
