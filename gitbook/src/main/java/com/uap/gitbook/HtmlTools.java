@@ -333,7 +333,7 @@ public class HtmlTools implements ConstantInterface {
 		return li.toString();
 	}
 
-	public static void toHTMLFile(List<Node> nodes, Menu menu) throws IOException {
+	public static void toHTMLFile(List<Node> nodes, Menu menu, String indexName) throws IOException {
 		if (nodes.size() <= 0) {
 			return;
 		}
@@ -358,8 +358,11 @@ public class HtmlTools implements ConstantInterface {
 		// System.out.println(html.toString());
 		doc.getElementById("left-menu").html(html.toString());
 
-		File output = new File(menu.getBasedir() + ConstantInterface.HTML + "index.html");
-		FileUtils.write(output, doc.toString(), ENCODING);
+		if(indexName != null && indexName.length()>0){
+			File output = new File(menu.getBasedir() + ConstantInterface.HTML + indexName);
+			FileUtils.write(output, doc.toString(), ENCODING);
+		}
+		
 
 	}
 

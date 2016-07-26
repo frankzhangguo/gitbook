@@ -12,13 +12,13 @@ public class SummaryParse {
 	//
 	List<Item> items = new ArrayList<Item>();
 
-	public Menu parse(String summaryPath) throws IOException {
+	public Menu parse(String summaryPath, String fileName) throws IOException {
 
 		ArrayList<Toc2Link> arrayList = new ArrayList<Toc2Link>();
 
 		Toc2Link lastLink = null;
 
-		for (String line : FileUtils.readLines(new File(summaryPath + "SUMMARY.MD"), ConstantInterface.ENCODING)) {
+		for (String line : FileUtils.readLines(new File(summaryPath + fileName), ConstantInterface.ENCODING)) {
 
 			String[] twoparts = line.split("\\*");
 			if (twoparts.length >= 2) {
