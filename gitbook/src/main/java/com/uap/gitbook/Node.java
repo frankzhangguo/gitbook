@@ -1,6 +1,9 @@
 package com.uap.gitbook;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class Node {
@@ -99,8 +102,14 @@ public class Node {
 		 * self.getUrl().substring(0, self.getUrl().lastIndexOf("/")) + "/"; }
 		 */
 
-		p.setOutputFile(self.getBasedir() + ConstantInterface.HTML + self.getUrl());
+		Path outPath = Paths.get(self.getBasedir());
+		if(ConstantInterface.HTML.trim().length()> 0){
+			outPath = outPath.resolve(ConstantInterface.HTML.trim());
+		}
+		
+		//p.setOutputFile(self.getBasedir() + ConstantInterface.HTML + self.getUrl());
 
+		p.setOutputFile(outPath.resolve(self.getUrl()).toString());
 		p.setTocTag(ConstantInterface.TOCTAG);
 		List<String> toc = null;
 

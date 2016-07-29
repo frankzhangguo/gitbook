@@ -6,6 +6,7 @@ package com.uap.gitbook;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -77,7 +78,7 @@ public class MainPath {
 			String html = HtmlTools.getFileContent(filePath);
 
 			Document doc = Jsoup.parse(html);
-			html = HtmlTools.formatDoc(doc);
+			html = HtmlTools.formatDoc(doc, null);
 
 			// Save to file
 			File output = new File(filePath);

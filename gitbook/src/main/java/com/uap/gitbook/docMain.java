@@ -2,6 +2,7 @@ package com.uap.gitbook;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
 
@@ -27,10 +28,7 @@ public class docMain {
 			generate(path, "LIST.MD", null);
 
 		
-			// HtmlTools.copyAllFiles(path, path);
-			
-			
-			
+	    	//HtmlTools.copyDirectory(Paths.get(path), Paths.get(path).resolve(ConstantInterface.HTML));
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

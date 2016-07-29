@@ -3,11 +3,25 @@
  */
 package com.uap.gitbook;
 
+import static java.nio.file.FileVisitResult.CONTINUE;
+import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.CopyOption;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileSystemLoopException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,6 +32,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.markdown4j.Markdown4jProcessor;
+
 
 import info.monitorenter.cpdetector.CharsetPrinter;
 
@@ -60,6 +75,66 @@ public class HtmlTools implements ConstantInterface {
 
 	}
 
+	
+	private static class TreeCopier implements FileVisitor<Path> {
+		private final Path source;
+		private final Path target;
+
+		TreeCopier(Path source, Path target) {
+			this.source = source;
+			this.target = target;
+		}
+
+		@Override
+		public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+			return CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+			// before visiting entries in a directory we copy the directory
+			// (okay if directory already exists).
+			CopyOption[] options = new CopyOption[0];
+			Path newdir = target.resolve(source.relativize(dir));
+			try {
+				if(dir.equals(target)){
+					return FileVisitResult.SKIP_SUBTREE;
+				}
+				if(!needToCopy(dir.toString())) 
+					return FileVisitResult.SKIP_SUBTREE;
+				Files.copy(dir, newdir, options);
+			} catch (FileAlreadyExistsException x) {
+				// ignore
+			} catch (IOException x) {
+				System.err.format("Unable to create: %s: %s%n", newdir, x);
+				return SKIP_SUBTREE;
+			}
+			return CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+			try {
+				if(needToCopy(file.toString())){
+					Files.copy(file, target.resolve(source.relativize(file)), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult visitFileFailed(Path file, IOException exc) {
+			if (exc instanceof FileSystemLoopException) {
+				System.err.println("cycle detected: " + file);
+			} else {
+				System.err.format("Unable to copy: %s: %s%n", file, exc);
+			}
+			return CONTINUE;
+		}
+	}
 	public static boolean needToCopy(String path) {
 
 		// 表达式对象
@@ -81,36 +156,15 @@ public class HtmlTools implements ConstantInterface {
 		}
 		return true;
 	}
-
-	public static void copyAllFiles(String path, String distpath) throws IOException {
-		path = path.toLowerCase();
-		distpath = distpath.toLowerCase();
-		File file = new File(path);
-		File[] files = file.listFiles();
-
-		if (files == null) {
-			return;
-		}
-		for (int i = 0; i < files.length; i++) {
-
-			if (needToCopy(files[i].getAbsolutePath())) {
-				if (files[i].isDirectory()) {
-					copyAllFiles(files[i].getAbsolutePath(), distpath);
-
-				} else {
-					String filePath = files[i].getAbsolutePath().toLowerCase();
-
-					String distFile = filePath;
-					distFile = distFile.replace(distpath, distpath + ConstantInterface.HTML);
-					FileUtils.copyFile(new File(filePath), new File(distFile));
-				}
-			}
-
-		}
-
+	
+	public static void copyDirectory(Path source, Path target) throws IOException {
+		EnumSet<FileVisitOption> opts = EnumSet.of(FileVisitOption.FOLLOW_LINKS);
+		TreeCopier tc = new TreeCopier(source, target);
+		Files.walkFileTree(source, opts, Integer.MAX_VALUE, tc);
 	}
 
-	public static String formatDoc(Document doc) {
+
+	public static String formatDoc(Document doc, String  mdfile) {
 
 		Elements links = doc.getElementsByTag("pre");
 		boolean prewithcode = false;
@@ -142,6 +196,21 @@ public class HtmlTools implements ConstantInterface {
 			}
 			element.attr("src", piclink);
 
+			if(mdfile != null){
+				Path filePath =Paths.get(mdfile).getParent();
+				try {
+					File file=new File(filePath.resolve(piclink).toString());    
+					if(!file.exists()){
+						System.out.println("图片文件不存在:"+filePath.resolve(piclink).toString());
+					}
+				} catch (Exception e) {
+					System.out.println(mdfile+"中的图片路径错误："+ piclink);
+
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				}
+			}
+			
 		}
 
 		String out = doc.toString();
@@ -223,7 +292,8 @@ public class HtmlTools implements ConstantInterface {
 
 			doc.body().append(nav);
 
-			String htmlContent = formatDoc(doc);
+			
+			String htmlContent = formatDoc(doc, args.getMarkdownFile());
 
 			if (args.getOutputFile() == null) {
 				// Display to console
@@ -344,7 +414,7 @@ public class HtmlTools implements ConstantInterface {
 			for (Node item : nodes) {
 				html.append(item.process());
 			}
-			html.append("<li><a href='/webpage/developer/ieop/views/docIndex.html#/pic/webpage/developer/ieop/doc/quickdev/startup_setup.html'>开发平台历史版本</a></li>");
+			//html.append("<li><a href='/webpage/developer/ieop/views/docIndex.html#/pic/webpage/developer/ieop/doc/quickdev/startup_setup.html'>开发平台历史版本</a></li>");
 
 			html.append(" </ul>");
 			html.append("\r\n");
@@ -359,7 +429,11 @@ public class HtmlTools implements ConstantInterface {
 		doc.getElementById("left-menu").html(html.toString());
 
 		if(indexName != null && indexName.length()>0){
-			File output = new File(menu.getBasedir() + ConstantInterface.HTML + indexName);
+			Path outPath = Paths.get(menu.getBasedir());
+			if(ConstantInterface.HTML.trim().length()> 0){
+				outPath = outPath.resolve(ConstantInterface.HTML.trim());
+			}
+			File output = new File(outPath.resolve(indexName).toString());
 			FileUtils.write(output, doc.toString(), ENCODING);
 		}
 		

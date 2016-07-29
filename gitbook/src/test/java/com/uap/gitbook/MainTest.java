@@ -3,6 +3,8 @@
  */
 package com.uap.gitbook;
 
+import java.nio.file.Paths;
+
 /**
  * @author Frank
  * 
@@ -14,21 +16,9 @@ public class MainTest {
 	 */
 	public static void main(String[] args) {
 		try {
+		String p =	Paths.get("D:\\GIT\\iuap-content").resolve("..\\ss\\new.txt").getParent().toString();
+			System.out.println(p);
 
-			/*
-			 * Menu menu = Xml2Java.xmltojava(Menu.class,
-			 * "D:/webbase/iuap/menu.xml"); List<Item> items = menu.getItems();
-			 * 
-			 * for (Item item : items) { item.setBasedir(menu.getBasedir()); }
-			 * 
-			 * List<Node> buildListToTree = new
-			 * TreeBuilder().buildListToTree(menu.getItems());
-			 * 
-			 * HtmlTools.toHTMLFile(buildListToTree, menu); //
-			 * System.out.print(buildListToTree.toString());
-			 */
-
-			HtmlTools.copyAllFiles("D:\\workspace\\part1\\", "D:\\workspace\\part1\\");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
